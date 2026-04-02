@@ -9,12 +9,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: EditProfileScreen(),
+      home: ProfileScreen(),
     );
   }
 }
 
-class EditProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatelessWidget {
+  final List<Map<String, String>> posts = [
+    {"title": "My first post", "date": "2026-01-01"},
+    {"title": "Another post", "date": "2026-01-02"},
+    {"title": "Flutter is fun", "date": "2026-01-03"},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,12 +38,9 @@ class EditProfileScreen extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Padding(
                     padding: EdgeInsets.all(16),
-                    child: Center(
-                      child: Container(
-                        width: isMobile ? double.infinity : 500,
-                        child: buildForm(),
-                      ),
-                    ),
+                    child: isMobile
+                        ? buildMobileLayout()
+                        : buildDesktopLayout(),
                   ),
                 ),
               ),
@@ -115,65 +118,85 @@ class EditProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget buildForm() {
+  Widget buildDesktopLayout() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(flex: 1, child: buildProfileCard()),
+        SizedBox(width: 16),
+        Expanded(flex: 2, child: buildPostList()),
+      ],
+    );
+  }
+
+  Widget buildMobileLayout() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        buildProfileCard(),
+        SizedBox(height: 16),
+        buildPostList(),
+      ],
+    );
+  }
+
+  Widget buildProfileCard() {
     return Container(
       padding: EdgeInsets.all(16),
       color: Color(0xffcfcfcf),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text("Edit Profile"),
-          SizedBox(height: 16),
-
-          Center(
-            child: Container(
-              height: 80,
-              width: 80,
-              color: Colors.grey,
-              alignment: Alignment.center,
-              child: Text("Avatar"),
-            ),
-          ),
-
-          SizedBox(height: 10),
-
-          TextField(
-            decoration: InputDecoration(
-              labelText: "Username",
-              border: OutlineInputBorder(),
-            ),
-          ),
-
-          SizedBox(height: 10),
-
-          TextField(
-            decoration: InputDecoration(
-              labelText: "Email",
-              border: OutlineInputBorder(),
-            ),
-          ),
-
-          SizedBox(height: 10),
-
-          TextField(
-            obscureText: true,
-            decoration: InputDecoration(
-              labelText: "Password",
-              border: OutlineInputBorder(),
-            ),
-          ),
-
-          SizedBox(height: 20),
-
           Container(
-            padding: EdgeInsets.all(12),
-            color: Colors.blue,
+            height: 80,
+            width: 80,
+            color: Colors.grey,
             alignment: Alignment.center,
+            child: Text("Avatar"),
+          ),
+          SizedBox(height: 10),
+          Text("Username"),
+          SizedBox(height: 6),
+          Text("Email@example.com"),
+          SizedBox(height: 6),
+          Text("Joined: 2026"),
+        ],
+      ),
+    );
+  }
+
+  Widget buildPostList() {
+    return Container(
+      padding: EdgeInsets.all(10),
+      color: Color(0xffbdbdbd),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.all(8),
+            color: Color(0xff6b6b6b),
             child: Text(
-              "Save",
+              "User Posts",
               style: TextStyle(color: Colors.white),
             ),
           ),
+          SizedBox(height: 10),
+          ...posts.map((p) => buildPostItem(p)),
+        ],
+      ),
+    );
+  }
+
+  Widget buildPostItem(Map<String, String> data) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 6),
+      padding: EdgeInsets.all(12),
+      color: Color(0xffe8e8e8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(data["title"] ?? ""),
+          SizedBox(height: 4),
+          Text(data["date"] ?? ""),
         ],
       ),
     );
